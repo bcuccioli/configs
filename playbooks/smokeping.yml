@@ -35,17 +35,10 @@
 
        # lighttpd configuration
 
-       - name: Update lighttpd document root
-         lineinfile:
-             dest=/etc/lighttpd/lighttpd.conf
-             regexp="^server.document-root *=.*$"
-             line="server.document-root = \"/var/www\""
-             state=present
-
        - name: Symlink static www files
          file:
              src: "/usr/share/smokeping/www"
-             dest: "/var/www/smokeping"
+             dest: "/var/www/html/smokeping"
              state: link
 
        - name: Enable lighttpd fastcgi
@@ -60,7 +53,7 @@
        - name: Set up smokeping fastcgi
          copy:
              src: "../smokeping/smokeping.fcgi"
-             dest: "/var/www/smokeping/smokeping.fcgi"
+             dest: "/var/www/html/smokeping/smokeping.fcgi"
              mode: a+x
 
        - name: Restart lighttpd
