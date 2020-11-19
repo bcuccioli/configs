@@ -1,0 +1,82 @@
+#!/usr/bin/env -S ansible-playbook
+
+---
+ - hosts: all
+   gather_facts: no
+   remote_user: blc
+
+   tasks:
+       - name: Install some necessary packages
+         apt:
+             pkg:
+             - ca-certificates
+             - curl
+         become: true
+
+       - name: Create pi-hole directory
+         file:
+             path: /etc/pihole
+             state: directory
+         become: true
+
+       - name: Copy pi-hole conf
+         copy:
+             src: ../pihole/setupVars.conf
+             dest: /etc/pihole/setupVars.conf
+         become: true
+
+       - stat:
+             path: /usr/local/bin/pihole
+         register: pihole_binary
+
+       - set_fact:
+             pihole_installed: "{{ pihole_binary.stat.exists | default(false) }}"
+
+       - name: Download pi-hole installer
+         get_url:
+             url: https://install.pi-hole.net
+             dest: ~/install-pihole.sh
+             mode: 0740
+         become: true
+         when: not pihole_installed
+
+       - name: Install pi-hole
+         shell: "~/install-pihole.sh --unattended"
+         become: true
+         when: not pihole_installed
+
+       - name: Copy pi-hole configuration files
+         copy: src={{ item }} dest=/etc/pihole/
+         become: true
+         with_fileglob:
+             - ../pihole/*
+
+       - name: Install dnscrypt-proxy
+         apt: name=dnscrypt-proxy state=present
+         become: true
+
+       - name: Copy dnscrypt-proxy configuration files
+         copy: src={{ item }} dest=/etc/dnscrypt-proxy/
+         become: true
+         with_fileglob:
+             - ../dnscrypt-proxy/*
+
+       - name: Restart pi-hole
+         systemd:
+             name: pihole-FTL
+             state: restarted
+             daemon_reload: yes
+         become: true
+
+       - name: Restart dnscrypt-proxy
+         systemd:
+             name: dnscrypt-proxy
+             state: restarted
+             daemon_reload: yes
+         become: true
+
+       - name: Clean up apt caches
+         apt:
+             autoclean: yes
+             autoremove: yes
+         become: true

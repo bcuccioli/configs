@@ -1,0 +1,70 @@
+#!/usr/bin/env -S ansible-playbook
+
+---
+ - hosts: all
+   gather_facts: no
+   remote_user: blc
+   become: true
+
+   tasks:
+       # Install
+
+       - name: Install smokeping and lighttpd
+         apt:
+             pkg:
+             - smokeping
+             - lighttpd
+
+       - name: Clean up apt caches
+         apt:
+             autoclean: yes
+             autoremove: yes
+
+       # smokeping configuration
+
+       - name: Copy smokeping config files
+         copy: src={{ item }} dest=/etc/smokeping/config.d/
+         with_fileglob:
+             - ../smokeping/config.d/*
+
+       - name: Reload smokeping daemon
+         systemd:
+             name: smokeping
+             state: restarted
+             daemon_reload: yes
+
+       # lighttpd configuration
+
+       - name: Update lighttpd document root
+         lineinfile:
+             dest=/etc/lighttpd/lighttpd.conf
+             regexp="^server.document-root *=.*$"
+             line="server.document-root = \"/var/www\""
+             state=present
+
+       - name: Symlink static www files
+         file:
+             src: "/usr/share/smokeping/www"
+             dest: "/var/www/smokeping"
+             state: link
+
+       - name: Enable lighttpd fastcgi
+         shell: "lighttpd-enable-mod fastcgi"
+         ignore_errors: yes
+
+       - name: Configure lighttpd fastcgi
+         copy:
+             src: "../lighttpd/conf-available/10-fastcgi.conf"
+             dest: "/etc/lighttpd/conf-available/10-fastcgi.conf"
+
+       - name: Set up smokeping fastcgi
+         copy:
+             src: "../smokeping/smokeping.fcgi"
+             dest: "/var/www/smokeping/smokeping.fcgi"
+             mode: a+x
+
+       - name: Restart lighttpd
+         systemd:
+             name: lighttpd
+             state: restarted
+             daemon_reload: yes

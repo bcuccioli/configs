@@ -1,0 +1,55 @@
+#!/usr/bin/env -S ansible-playbook --ask-pass --ask-vault-pass
+
+---
+ - hosts: all
+   vars:
+     - blc_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66373938636330346238396339333861383130356334363338663263373965353562376234626366
+          3836646137306431373465343663633438656263386464390a636339366665623138613037396338
+          38376533646333376164326632346365306237333638396139646136633861303663303339643134
+          6466393039643166650a343037656531343764363463316466313233623436323935646266363838
+          3631
+   gather_facts: no
+   remote_user: root
+   become: true
+
+   tasks:
+    - name: Add a new user named blc
+      user:
+          name: blc
+          shell: /bin/bash
+          password: "{{ blc_password | string | password_hash('sha512') }}"
+
+    - name: Install sudo
+      apt: name=sudo state=present
+
+    - name: Add user blc to sudoers
+      copy:
+          dest: "/etc/sudoers.d/blc"
+          content: "blc ALL=(ALL) NOPASSWD: ALL"
+
+    - name: Deploy ssh keys
+      authorized_key: user=blc
+                      key="{{ lookup('file', '/home/blc/.ssh/id_rsa.pub') }}"
+                      state=present
+
+    - name: Set sshd configuration
+      lineinfile:
+          dest=/etc/ssh/sshd_config
+          regexp="{{ item.reg }}"
+          line="{{ item.line }}"
+          state=present
+          backup=yes
+      with_items:
+        - { reg: '^#?PasswordAuthentication', line: 'PasswordAuthentication no' }
+        - { reg: '^#?PermitRootLogin', line: 'PermitRootLogin no' }
+        - { reg: '^X11Forwarding', line: '# X11Forwarding no' }
+      notify:
+        - restart ssh
+
+   handlers:
+       - name: restart ssh
+         service:
+             name=sshd
+             state=restarted

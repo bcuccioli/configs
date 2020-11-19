@@ -1,0 +1,49 @@
+#!/usr/bin/env -S ansible-playbook --ask-vault-pass
+
+---
+ - hosts: all
+   vars:
+     - blc_password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          66373938636330346238396339333861383130356334363338663263373965353562376234626366
+          3836646137306431373465343663633438656263386464390a636339366665623138613037396338
+          38376533646333376164326632346365306237333638396139646136633861303663303339643134
+          6466393039643166650a343037656531343764363463316466313233623436323935646266363838
+          3631
+   gather_facts: no
+   remote_user: blc
+
+   tasks:
+       - name: Upgrade all packages
+         apt: upgrade=dist update_cache=yes
+         sudo: yes
+
+       - name: Rebooting if needed
+         command: shutdown -r now removes=/var/run/reboot-required
+         sudo: yes
+         async: 0
+         poll: 0
+         ignore_errors: true
+         register: restarted
+
+       - name: Waiting for reboot...
+         local_action: wait_for host=localhost port=22 delay=15 state=started
+         sudo: no
+         when: restarted.changed
+
+       - name: Install unattended-upgrades
+         apt: name=unattended-upgrades state=present
+         sudo: true
+
+       - name: Configure unattended-upgrades
+         replace: 
+             path=/etc/apt/apt.conf.d/50unattended-upgrades
+             regexp='^//      "origin=Debian'
+             replace='        "origin=Debian'
+         become: yes
+
+       - name: Clean up apt caches
+         apt:
+             autoclean: yes
+             autoremove: yes
+         become: yes

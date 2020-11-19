@@ -1,0 +1,29 @@
+*** Targets ***
+
+probe = FPing
+
+menu = Top
+title = Network Latency Grapher
+
++ Local
+
+menu = Local
+title = Local Network
+
+++ blc_mbp
+
+menu = blc mbp
+title = blc mbp
+host = 192.168.0.100
+
+++ ltt_mbp
+
+menu = ltt mbp
+title = ltt mbp
+host = 192.168.1.200
+
+++ portal
+
+menu = portal
+title = portal
+host = 192.168.1.100
