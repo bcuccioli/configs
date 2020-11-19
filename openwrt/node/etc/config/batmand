@@ -1,0 +1,4 @@
+
+config batmand 'general'
+	option interface 'bat0'
+

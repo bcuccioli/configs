@@ -1,0 +1,103 @@
+config dnsmasq
+	option domainneeded '1'
+	option boguspriv '1'
+	option filterwin2k '0'
+	option localise_queries '1'
+	option rebind_protection '1'
+	option rebind_localhost '1'
+	option local '/lan/'
+	option domain 'lan'
+	option expandhosts '1'
+	option nonegcache '0'
+	option authoritative '1'
+	option readethers '1'
+	option leasefile '/tmp/dhcp.leases'
+	option resolvfile '/tmp/resolv.conf.auto'
+	option nonwildcard '1'
+	option localservice '1'
+
+config dhcp 'pub'
+	option interface 'pub'
+	option start '100'
+	option limit '150'
+	option leasetime '12h'
+	option dhcpv6 'server'
+	option ra 'server'
+	option ra_management '1'
+	list dhcp_option '6,192.168.0.2,192.168.0.2'
+
+config dhcp 'priv'
+	option interface 'priv'
+	option start '100'
+	option limit '150'
+	option leasetime '12h'
+	option dhcpv6 'server'
+	option ra 'server'
+	option ra_management '1'
+	list dhcp_option '6,192.168.0.2,192.168.0.2'
+
+config dhcp 'wan'
+	option interface 'wan'
+	option ignore '1'
+
+config odhcpd 'odhcpd'
+	option maindhcp '0'
+	option leasefile '/tmp/hosts/odhcpd'
+	option leasetrigger '/usr/sbin/odhcpd-update'
+	option loglevel '4'
+
+## Specific hosts:
+
+config host
+	option mac '94:C6:91:1E:86:32'
+	option name 'meerkat'
+	option dns '1'
+	option ip '192.168.0.2'
+
+config host
+	option mac 'B8:27:EB:40:56:48'
+	option name 'berry'
+	option dns '1'
+	option ip '192.168.0.3'
+
+config host
+	option mac 'F0:18:98:99:14:E7'
+	option name 'blc-mbp'
+	option dns '1'
+	option ip '192.168.0.100'
+
+config host
+	option mac 'A4:0E:2B:0E:8B:08'
+	option name 'Portal'
+	option dns '1'
+	option ip '192.168.1.100'
+
+config host
+	option mac 'F0:1D:BC:3E:18:B6'
+	option name 'XboxOne'
+	option dns '1'
+	option ip '192.168.1.101'
+
+config host
+	option 'mac' '04:03:D6:29:4C:9A'
+	option name 'Switch'
+	option dns '1'
+	option ip '192.168.1.102'
+
+config host
+	option mac '34:36:3B:D0:0A:00'
+	option name 'laurens-MBP-4'
+	option dns '1'
+	option ip '192.168.1.200'
+
+config host
+	option mac '08:05:81:C1:EE:79'
+	option name 'roku1'
+	option dns '1'
+	option ip '192.168.1.201'
+
+config host
+	option mac 'AC:AE:19:B4:52:5D'
+	option name 'roku2'
+	option dns '1'
+	option ip '192.168.1.202'
