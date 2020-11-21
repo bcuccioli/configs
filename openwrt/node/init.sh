@@ -31,7 +31,14 @@ rm /etc/firewall.user;
 rm /etc/config/dhcp;
 rm /etc/config/uhttpd;
 
-echo "Finishing";
+echo "Committing";
 uci commit;
+
+# Set Wifi LEDs to be on and steady.
+echo "Setting LEDs";
+echo "none" > /sys/class/leds/mt76-phy0/trigger;
+echo "none" > /sys/class/leds/zbt-we826\:green\:wifi/trigger;
+echo 1 > /sys/class/leds/mt76-phy0/brightness;
+echo 1 > /sys/class/leds/zbt-we826\:green\:wifi/brightness;
 
 reboot;
