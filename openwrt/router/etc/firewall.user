@@ -1,10 +1,14 @@
-iptables -t nat -A prerouting_pub_rule -p tcp --dport 53 -j DNAT --to 192.168.0.2:53
-iptables -t nat -A prerouting_pub_rule -p udp --dport 53 -j DNAT --to 192.168.0.2:53
-iptables -t nat -A prerouting_priv_rule -p tcp --dport 53 -j DNAT --to 192.168.0.2:53
-iptables -t nat -A prerouting_priv_rule -p udp --dport 53 -j DNAT --to 192.168.0.2:53
+iptables -t nat -N pihole
+iptables -t nat -A pihole -p tcp --dport 53 -j DNAT --to 192.168.0.2:53
+iptables -t nat -A pihole -p udp --dport 53 -j DNAT --to 192.168.0.2:53
 
-ip6tables -t nat -A PREROUTING -i br-pub -p tcp --dport 53 -j DNAT --to [fe80::604f:d3df:c4fe:31d4]:53
-ip6tables -t nat -A PREROUTING -i br-pub -p udp --dport 53 -j DNAT --to [fe80::604f:d3df:c4fe:31d4]:53
-ip6tables -t nat -A PREROUTING -i br-priv -p tcp --dport 53 -j DNAT --to [fd87:eef3:b672::19d]:53
-ip6tables -t nat -A PREROUTING -i br-priv -p udp --dport 53 -j DNAT --to [fd87:eef3:b672::19d]:53
+iptables -t nat -A prerouting_pub_rule -j pihole
+iptables -t nat -A prerouting_priv_rule -j pihole
+
+ip6tables -t nat -N pihole
+ip6tables -t nat -A pihole -p tcp --dport 53 -j DNAT --to [fd87:eef3:b672::19d]:53
+ip6tables -t nat -A pihole -p udp --dport 53 -j DNAT --to [fd87:eef3:b672::19d]:53
+
+ip6tables -t nat -A PREROUTING -i br-pub -j pihole
+ip6tables -t nat -A PREROUTING -i br-priv -j pihole
 ip6tables -t nat -A POSTROUTING -j MASQUERADE
