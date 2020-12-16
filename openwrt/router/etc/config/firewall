@@ -16,7 +16,6 @@ config zone
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'ACCEPT'
-	option masq '1'
 	option network 'priv'
 
 config zone
