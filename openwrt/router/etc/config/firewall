@@ -3,6 +3,7 @@ config defaults
 	option output 'ACCEPT'
 	option forward 'REJECT'
 	option synflood_protect '1'
+	option custom_chains '0'
 
 config zone
 	option name 'pub'

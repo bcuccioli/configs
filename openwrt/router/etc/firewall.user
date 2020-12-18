@@ -2,8 +2,8 @@ iptables -t nat -N pihole
 iptables -t nat -A pihole -p tcp ! -d 192.168.0.2 --dport 53 -j DNAT --to 192.168.0.2:53
 iptables -t nat -A pihole -p udp ! -d 192.168.0.2 --dport 53 -j DNAT --to 192.168.0.2:53
 
-iptables -t nat -A prerouting_pub_rule -j pihole
-iptables -t nat -A prerouting_priv_rule -j pihole
+iptables -t nat -A PREROUTING -i br-pub -j pihole
+iptables -t nat -A PREROUTING -i br-priv -j pihole
 iptables -t nat -A POSTROUTING -m conntrack --ctstate DNAT -j MASQUERADE
 
 ip6tables -t nat -N pihole
