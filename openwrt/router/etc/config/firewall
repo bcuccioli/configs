@@ -153,5 +153,13 @@ config rule
 	option proto 'tcp udp'
 	option target 'REJECT'
 
+config rule
+	option name 'Reject outgoing DNS-over-TLS'
+	option src '*'
+	option dest '*'
+	option dest_port '853'
+	option proto 'tcp udp'
+	option target 'REJECT'
+
 config include
 	option path '/etc/firewall.user'
