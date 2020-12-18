@@ -163,4 +163,9 @@ config rule
 	option target 'REJECT'
 
 config include
-	option path '/etc/firewall.user'
+	option path '/etc/config/firewall.user'
+	option reload '1'
+
+config include
+	option path '/etc/config/firewall.nat6'
+	option reload '1'
