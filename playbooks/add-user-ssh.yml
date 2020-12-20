@@ -48,6 +48,10 @@
       notify:
         - restart ssh
 
+    - name: Generate ssh key pair
+      community.crypto.openssh_keypair:
+          path: "~/.ssh/id_rsa"
+
    handlers:
        - name: restart ssh
          service:
