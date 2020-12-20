@@ -1,0 +1,55 @@
+#!/usr/bin/env -S ansible-playbook
+
+---
+ - hosts: all
+   gather_facts: no
+   remote_user: blc
+
+   tasks:
+       - name: Install some necessary packages
+         apt:
+             pkg:
+             - git
+             - curl
+         become: true
+
+       - stat:
+             path: /usr/bin/node
+         register: node_binary
+
+       - set_fact:
+             node_installed: "{{ node_binary.stat.exists | default(false) }}"
+
+       - name: Download node PPA script
+         get_url:
+             url: https://deb.nodesource.com/setup_15.x
+             dest: /root/setup_15.x
+             mode: 0740
+         become: true
+         when: not node_installed
+
+       - name: Install node PPA
+         shell: "/root/setup_15.x"
+         become: true
+         when: not node_installed
+
+       - name: Remove node PPA script
+         file:
+             path: /root/setup_15.x
+             state: absent
+         become: true
+         when: not node_installed
+
+       - name: Install node
+         apt:
+             name: nodejs
+             state: present
+             update_cache: yes
+         become: true
+         when: not node_installed
+
+       - name: Clean up apt caches
+         apt:
+             autoclean: yes
+             autoremove: yes
+         become: true
