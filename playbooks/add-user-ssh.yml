@@ -1,4 +1,4 @@
-#!/usr/bin/env -S ansible-playbook --ask-pass --ask-vault-pass
+#!/usr/bin/env -S ansible-playbook --ask-vault-pass
 
 ---
  - hosts: all
