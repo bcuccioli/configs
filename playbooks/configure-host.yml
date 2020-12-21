@@ -6,6 +6,14 @@
    remote_user: blc
 
    tasks:
+       - name: Installing some packages
+         apt:
+             pkg:
+             - unattended-upgrades
+             - tmux
+             update_cache: yes
+         become: yes
+
        - name: Upgrade all packages
          apt: upgrade=dist update_cache=yes
          become: yes
@@ -21,10 +29,6 @@
        - name: Waiting for reboot...
          local_action: wait_for host=localhost port=22 delay=15 state=started
          when: restarted.changed
-
-       - name: Install unattended-upgrades
-         apt: name=unattended-upgrades state=present
-         become: yes
 
        - name: Configure unattended-upgrades
          replace: 
