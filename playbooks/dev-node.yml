@@ -48,6 +48,10 @@
          become: true
          when: not node_installed
 
+       - name: Install npm-check-updates
+         shell: "npm install -g npm-check-updates"
+         become: true
+
        - name: Clean up apt caches
          apt:
              autoclean: yes
