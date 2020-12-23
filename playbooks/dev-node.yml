@@ -11,6 +11,7 @@
              pkg:
              - git
              - curl
+             - sqlite3
          become: true
 
        - stat:
