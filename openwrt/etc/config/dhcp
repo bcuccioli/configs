@@ -57,12 +57,6 @@ config host
 	option ip '192.168.0.2'
 
 config host
-	option mac 'B8:27:EB:40:56:48'
-	option name 'berry'
-	option dns '1'
-	option ip '192.168.0.3'
-
-config host
 	option mac 'F0:18:98:99:14:E7'
 	option name 'blc-mbp'
 	option dns '1'
@@ -85,21 +79,3 @@ config host
 	option name 'Switch'
 	option dns '1'
 	option ip '192.168.1.102'
-
-config host
-	option mac '34:36:3B:D0:0A:00'
-	option name 'laurens-MBP-4'
-	option dns '1'
-	option ip '192.168.1.200'
-
-config host
-	option mac '08:05:81:C1:EE:79'
-	option name 'roku1'
-	option dns '1'
-	option ip '192.168.1.201'
-
-config host
-	option mac 'AC:AE:19:B4:52:5D'
-	option name 'roku2'
-	option dns '1'
-	option ip '192.168.1.202'
